@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppBizInfoMonthlyMapper">
+    
+    <select id="getAppBizInfo" parameterType="map" resultType="AppBizInfoMonthly">
+       select c.app_id as appId,c.users as currentUsers,c.new_reg_users as currentNewRegUsers,l.users as lastUsers,l.new_reg_users as lastNewRegUsers,
+       c.sess_times+c.u_sess_times as serviceCount, c.timestamp as timestamp from BasicInfoMonthly c,BasicInfoMonthly l
+       <include refid="queryDynSql1" />
+    </select> 
+    
+    <sql id="queryDynSql1">
+       <trim prefix="WHERE" prefixOverrides="AND |OR ">
+           <![CDATA[ 1 = 1  ]]>
+           <![CDATA[ and c.area = 'ALL' ]]>
+           <![CDATA[ and l.area = 'ALL' ]]>
+		   <![CDATA[ and c.timestamp=unix_timestamp('${ctimestamp}') ]]>
+		   <![CDATA[ and l.timestamp=unix_timestamp('${ltimestamp}') ]]>
+		   <![CDATA[ and c.app_id = '${appId}' ]]>
+		   <![CDATA[ and l.app_id = '${appId}' ]]>
+       </trim>
+    </sql>
+    
+    <select id="getAppBizInfoList" parameterType="map" resultType="AppBizInfoMonthly">
+       select c.app_id as appId,c.users as currentUsers,c.new_reg_users as currentNewRegUsers,l.users as lastUsers,l.new_reg_users as lastNewRegUsers,
+       c.sess_times+c.u_sess_times as serviceCount, c.timestamp as timestamp from BasicInfoMonthly c,BasicInfoMonthly l
+       <include refid="queryDynSql2" />
+    </select>
+    
+    <sql id="queryDynSql2">
+       <trim prefix="WHERE" prefixOverrides="AND |OR ">
+           <![CDATA[ 1 = 1  ]]>
+           <![CDATA[ and c.area = 'ALL' ]]>
+           <![CDATA[ and l.area = 'ALL' ]]>
+		   <![CDATA[ and c.timestamp=unix_timestamp('${ctimestamp}') ]]>
+		   <![CDATA[ and l.timestamp=unix_timestamp('${ltimestamp}') ]]>
+		   <![CDATA[ and c.app_id = l.app_id ]]>
+		   <![CDATA[ and c.users >= 500 ]]>
+       </trim>
+    </sql>
+</mapper>

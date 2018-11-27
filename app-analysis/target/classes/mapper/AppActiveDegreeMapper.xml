@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppActiveDegreeMapper">
+	<resultMap id="appActiveDegree" type="AppActiveDegree" >
+      <result column="app_id" property="appId" jdbcType="VARCHAR" />
+      <result column="app_name" property="appName" jdbcType="VARCHAR" />
+      <result column="platform" property="platform" jdbcType="VARCHAR" />
+      <result column="active_users" property="activeMonthly" jdbcType="INTEGER" />
+      <result column="service_count" property="serviceCountMonthly" jdbcType="BIGINT" />
+      <result column="inc_reg_users_rate" property="newRegUsersRateMonthly" jdbcType="DOUBLE" />
+      <result column="inc_act_users_rate" property="usersRateMonthly" jdbcType="DOUBLE" />
+      <result column="act_users_retent_rate" property="retentRateMonthly" jdbcType="DOUBLE" />
+      <result column="active_users_score" property="activeMonthlyScore" jdbcType="DOUBLE" />
+      <result column="service_count_score" property="serviceCountScore" jdbcType="DOUBLE" />
+      <result column="inc_reg_users_score" property="incRegUsersScore" jdbcType="DOUBLE" />
+      <result column="inc_act_users_score" property="incActUsersScore" jdbcType="DOUBLE" />
+      <result column="retent_users_score" property="retentUsersScore" jdbcType="DOUBLE" />
+      <result column="score" property="score" jdbcType="DOUBLE" />
+      <result column="timestamp" property="timestamp" jdbcType="INTEGER" />
+    </resultMap>
+    
+    <insert id="saveAppActiveInfos" parameterType="java.util.List">
+       insert into appsactiveinfomonthly(app_id,app_name,platform,active_users,service_count,inc_reg_users_rate,inc_act_users_rate,act_users_retent_rate,active_users_score,
+       service_count_score,inc_reg_users_score,inc_act_users_score,retent_users_score,score,timestamp)
+       values
+       <foreach collection="list" item="item" index="index" separator="," >  
+        (#{item.appId},#{item.appName},#{item.platform},#{item.activeMonthly},#{item.serviceCountMonthly},#{item.newRegUsersRateMonthly},#{item.usersRateMonthly},#{item.retentRateMonthly}
+        ,#{item.activeMonthlyScore},#{item.serviceCountScore},#{item.incRegUsersScore},#{item.incActUsersScore},#{item.retentUsersScore},#{item.score},#{item.timestamp})  
+      </foreach> 
+    </insert> 
+    
+    <select id="getAppActiveInfosByRank" parameterType="map" resultMap="appActiveDegree">
+       select * from appsactiveinfomonthly where timestamp = unix_timestamp(#{timestamp}) order by score desc limit 0, #{rank}
+    </select>
+    
+    <select id="getAllAppActiveInfos" parameterType="map" resultMap="appActiveDegree">
+       select * from appsactiveinfomonthly where timestamp = unix_timestamp(#{timestamp}) order by score desc
+    </select> 
+    
+    <select id="getAppActiveInfoByNameOrId" parameterType="map" resultMap="appActiveDegree">
+       select * from appsactiveinfomonthly  
+       <include refid="queryDynSql" />
+    </select>
+    
+    <sql id="queryDynSql">
+       <trim prefix="WHERE" prefixOverrides="AND |OR ">
+      	   timestamp = unix_timestamp(#{timestamp}) 
+           <if test="appId != null">
+		   		and app_id = #{appId}
+		   </if>
+		   <if test="appName != null">
+		   		and app_name = #{appName}
+		   </if>
+       </trim>
+    </sql>
+</mapper>

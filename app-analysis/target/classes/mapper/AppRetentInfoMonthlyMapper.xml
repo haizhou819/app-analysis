@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppRetentInfoMonthlyMapper">
+    
+    <select id="getAppRetentInfo" parameterType="map" resultType="AppRetentInfoMonthly">
+       select c.app_id as appId,c.retent1 as retent1,l.active_users as lastActiveUsers from ActiveRetentionDaily c,ActiveRetentionDaily l
+       <include refid="queryDynSqlTest" />
+    </select> 
+    
+    <select id="getAppRetentInfoListByIds" parameterType="map" resultType="AppRetentInfoMonthly">
+       select c.app_id as appId,c.retent1 as retent1,l.active_users as lastActiveUsers from ActiveRetentionDaily c,ActiveRetentionDaily l
+       <include refid="queryDynSql" />
+    </select>
+    
+    <sql id="queryDynSql">
+       <trim prefix="WHERE" prefixOverrides="AND |OR ">
+           <![CDATA[ 1 = 1  ]]>
+		   <![CDATA[ and c.timestamp=unix_timestamp('${ctimestamp}') ]]>
+		   <![CDATA[ and l.timestamp=unix_timestamp('${ltimestamp}') ]]>
+		   <![CDATA[ and c.app_id = l.app_id ]]>
+		   <!-- <![CDATA[ and l.app_id = '${appId}' ]]> -->
+		   <![CDATA[ and c.type = '${type}' ]]>
+		   <![CDATA[ and l.type = '${type}' ]]> 
+		   <if test="appids != null and appids != ''">
+		   		and c.app_id in
+		   		<foreach item="item" index="index" collection="appids" open="(" separator="," close=")">  
+                	#{item}  
+            </foreach>  
+		   </if>
+       </trim>
+    </sql>
+    
+    <sql id="queryDynSqlTest">
+       <trim prefix="WHERE" prefixOverrides="AND |OR ">
+           <![CDATA[ 1 = 1  ]]>
+		   <![CDATA[ and c.timestamp=unix_timestamp('${ctimestamp}') ]]>
+		   <![CDATA[ and l.timestamp=unix_timestamp('${ltimestamp}') ]]>
+		   <![CDATA[ and c.app_id = l.app_id ]]>
+		   <![CDATA[ and l.app_id = '${appId}' ]]> 
+		   <![CDATA[ and c.type = '${type}' ]]>
+		   <![CDATA[ and l.type = '${type}' ]]> 
+       </trim>
+    </sql>
+    
+</mapper>

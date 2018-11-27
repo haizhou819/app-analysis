@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AppNameInfoMapper">
+    <select id="getAppNameFromReleaseByIds" parameterType="java.util.List" resultType="AppNameInfo">
+       select app_id as appId,app_name as appName from app_release where app_id in 
+       <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+            #{item}  
+       </foreach> 
+    </select> 
+    
+    <select id="getAppNameFromUserByIds" parameterType="java.util.List" resultType="AppNameInfo">
+       select app_id as appId,app_name as appName,platform,uid from app_mst where app_id in 
+       <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+            #{item}  
+       </foreach> 
+    </select> 
+    
+    <select id="getAppCompanyNameFromCertificate" parameterType="java.util.List" resultType="AppCompanyInfo">
+       select uid,company_name from certificate where uid in 
+       <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+            #{item}  
+       </foreach> 
+    </select> 
+    
+    <select id="getAppCompanyNameFromUser" parameterType="java.util.List" resultType="AppCompanyInfo">
+       select uid,company from user_extends_info where uid in 
+       <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+            #{item}  
+       </foreach> 
+    </select> 
+</mapper>
